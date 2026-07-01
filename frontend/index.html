@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Insight Causal Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Header Area -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">CI</div>
+                <h1>Causal Insight <span class="subtitle">Causal Engine</span></h1>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="model-select">Strategy</label>
+                    <div class="select-wrapper">
+                        <select id="model-select">
+                            <option value="graph">Graph Analysis</option>
+                            <option value="filter">Metadata Filter</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="status-indicator" id="connection-status">
+                    <span class="dot"></span>
+                    <span class="text">Disconnected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Chat Area -->
+        <main class="chat-interface">
+            <div id="messages-container" class="messages-container">
+                <!-- Welcome Message -->
+                <div class="message system-message">
+                    <div class="message-content">
+                        <p>Welcome to the Causal Engine. Select a strategy and ask a question to begin analyzing the conversation graph.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Ask a question about the data..." rows="1"></textarea>
+                    <button id="send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel: Evidence & State -->
+        <aside class="info-panel">
+            <div class="panel-section" id="status-section">
+                <h3>Live Status</h3>
+                <div id="live-status-text" class="status-text">Ready</div>
+                <div class="progress-bar"><div class="fill" id="status-progress"></div></div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Identified Concepts</h3>
+                <div id="concepts-container" class="tags-container">
+                    <span class="empty-state">No concepts identified yet.</span>
+                </div>
+            </div>
+
+            <div class="panel-section flex-grow">
+                <h3>Sources & Evidence</h3>
+                <div id="sources-container" class="sources-list">
+                    <div class="empty-state-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <p>Evidence will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title">Source Details</h2>
+                    <div class="modal-meta">
+                        <span id="modal-domain" class="badge"></span>
+                        <span id="modal-id" class="id-badge"></span>
+                    </div>
+                </div>
+                <button id="modal-close" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>Summary</h3>
+                <p id="modal-summary"></p>
+                <h3>Full Transcript</h3>
+                <pre id="modal-content"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

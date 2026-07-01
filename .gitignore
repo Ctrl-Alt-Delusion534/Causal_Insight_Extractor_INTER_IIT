@@ -1,0 +1,6 @@
+data_artifacts/
+data_raw/
+.env
+__pycache__/
+*.pyc
+.DS_Store
