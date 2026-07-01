@@ -4,6 +4,16 @@ This is a causal query and graph inference engine that I built to parse customer
 
 I contributed to this project under a case study challenge set by **Observe.AI** during the **Inter IIT Tech Meet 14.0**, where our team placed **12th out of 23 IITs**.
 
+## Tech Stack
+
+* **Backend**: FastAPI, Uvicorn, Python 3.10
+* **Vector Store**: Qdrant (Embedded Local Engine)
+* **Graph Network**: NetworkX
+* **Vector Embeddings**: Google Gemma 300M (`google/embeddinggemma-300m`)
+* **LLM Reasoning**: Google Gemini 2.0 Flash (`google-genai` SDK)
+* **Frontend**: HTML5, Vanilla JS, CSS3 (Outfit typography & dark glassmorphic design)
+* **Infrastructure**: Docker, Docker Compose
+
 ## How it works
 
 The backend uses a dual-retrieval pipeline combining vector search with directed graph traversal:
