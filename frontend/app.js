@@ -114,6 +114,12 @@ async function sendMessage() {
                         const eventData = JSON.parse(jsonStr);
                         handleServerEvent(eventData, aiMessageContent, (currText) => {
                             fullAiResponse += currText;
+                            if (window.marked) {
+                                aiMessageContent.innerHTML = marked.parse(fullAiResponse);
+                            } else {
+                                aiMessageContent.textContent = fullAiResponse;
+                            }
+                            scrollToBottom();
                         });
                     } catch (e) {
                         console.error('JSON Parse Error', e);
@@ -153,10 +159,7 @@ function handleServerEvent(eventMsg, messageEl, appendTextCallback) {
             break;
 
         case 'token':
-            // Simple typing effect or direct append
-            messageEl.innerHTML += data; // Using innerHTML to allow newlines/formatting if needed
             appendTextCallback(data);
-            scrollToBottom();
             break;
 
         case 'error':

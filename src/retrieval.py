@@ -35,7 +35,7 @@ def init_resources():
     if hf_token:
         huggingface_hub.login(token=hf_token)
 
-    client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    client = genai.Client(api_key=os.getenv("GEMINI_KEY") or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"))
     model = SentenceTransformer(MODEL_ID, trust_remote_code=True)
     qdrant_client = QdrantClient(path=str(QDRANT_PATH))
     
@@ -72,7 +72,7 @@ def reformulate_query(query: str, chat_history: list) -> str:
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.1-flash-lite",
             contents=prompt
         )
         rewritten = response.text.strip()
@@ -96,7 +96,7 @@ def get_cached_shortest_path(start: str, end: str):
         pass
     return None
 async def run_graph_strategy(user_query: str, chat_history: list) -> AsyncGenerator:
-    yield {"event": "status", "data": "Init"}
+    yield {"event": "status", "data": "Analyzing Query..."}
     
     if client is None:
         raise ValueError("Gemini Client is None! Init failed?")
@@ -106,10 +106,8 @@ async def run_graph_strategy(user_query: str, chat_history: list) -> AsyncGenera
 
     refined_query = reformulate_query(user_query, chat_history)
     
-    # [FIX] Infer domain to restrict graph search
     plan = await infer_filters(user_query, chat_history)
     
-    # [Revert] Don't strict filter Qdrant initial query because Concepts might lack domain
     q_vec = get_embedding(refined_query)
     hits = qdrant_client.query_points("convo_graph", query=q_vec, limit=50).points
 
@@ -132,7 +130,6 @@ async def run_graph_strategy(user_query: str, chat_history: list) -> AsyncGenera
         nid = h.payload['node_id']
         ntype = h.payload['type']
         
-        # [Filter] Only accept Calls from target domain
         if ntype == 'Call': 
             if target_domain:
                 if nid in G and G.nodes[nid].get('domain') == target_domain:
@@ -251,7 +248,7 @@ async def run_graph_strategy(user_query: str, chat_history: list) -> AsyncGenera
     yield {"event": "status", "data": "Streaming Answer..."}
     
     response = client.models.generate_content_stream(
-        model="gemini-2.0-flash",
+        model="gemini-3.1-flash-lite",
         contents=prompt
     )
     for chunk in response:
@@ -285,7 +282,7 @@ async def infer_filters(user_query: str, chat_history: list) -> SearchPlan:
       3. Return NULL for others if unsure.
     """
     resp = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-3.1-flash-lite",
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json", 
@@ -295,11 +292,11 @@ async def infer_filters(user_query: str, chat_history: list) -> SearchPlan:
     return resp.parsed
 
 async def run_filter_strategy(user_query: str, chat_history: list) -> AsyncGenerator:
-    yield {"event": "status", "data": "Init"}
+    yield {"event": "status", "data": "Analyzing Query..."}
     refined_query = reformulate_query(user_query, chat_history)
     plan = await infer_filters(user_query, chat_history)
     
-    yield {"event": "concepts", "data": [f"{f.field}:{f.value[0]}" for f in plan.filters]}
+    yield {"event": "concepts", "data": [f"{f.field}:{f.value[0]}" for f in plan.filters if f.value]}
 
     qdrant_filter = None
     if plan.filters:
@@ -378,6 +375,6 @@ async def run_filter_strategy(user_query: str, chat_history: list) -> AsyncGener
         4. If the evidence talks about a specific technical error (like 'checksum'), mention it.
     """
     
-    response = client.models.generate_content_stream(model="gemini-2.0-flash", contents=gen_prompt)
+    response = client.models.generate_content_stream(model="gemini-3.1-flash-lite", contents=gen_prompt)
     for chunk in response:
         yield {"event": "token", "data": chunk.text}
