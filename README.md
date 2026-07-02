@@ -10,7 +10,7 @@ I contributed to this project under a case study challenge set by **Observe.AI**
 * **Vector Store**: Qdrant (Embedded Local Engine)
 * **Graph Network**: NetworkX
 * **Vector Embeddings**: Google Gemma 300M (`google/embeddinggemma-300m`)
-* **LLM Reasoning**: Google Gemini 2.0 Flash (`google-genai` SDK)
+* **LLM Reasoning**: Google Gemini 3.1 Flash (`google-genai` SDK)
 * **Frontend**: HTML5, Vanilla JS, CSS3 (Outfit typography & dark glassmorphic design)
 * **Infrastructure**: Docker, Docker Compose
 
